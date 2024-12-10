@@ -1,0 +1,59 @@
+torch_home: ~/.cache/torch/
+seed: 2000
+use_amp: False
+balance_sample: True  #lmh_change False
+vis: True
+
+project_name: 'lmh-DFA-eval'
+world_size: '1'
+cuda_visible_devices: '0'
+debug: False #lmh_change False
+num_workers: 8
+
+dataset:
+  name: DFA
+  loader: torch
+  DFA:
+    data_root: /data5/liuminghui/datasets/forgery/Attribution/release/
+    train_ratio_per_class: 0.8
+    meta_paths: [
+#      ./data/release/meta_data/Protocol2_openset_fake_val_merge_meta.csv,
+      /data5/liuminghui/datasets/forgery/Attribution/release/meta_data/Protocol1_openset_fake_large_merge_meta.csv,
+    ]
+    seed: ${seed}
+    mod: all
+    crop_face: False
+    predictor_path: /data5/liuminghui/datasets/forgery/Attribution/release/shape_predictor_68_face_landmarks.dat
+
+transform:
+  image_size: 256
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+method:
+  name: SLModel
+
+model:
+  name: BaseClassifier
+  resume:
+  params:
+    encoder: resnet50
+    num_classes: 20 #22/20分类数
+    drop_rate: 0.2
+    pretrained: True
+
+train:
+  epochs: 50
+  batch_size: 128 #128
+  log_time: 30
+  memory:
+    init_epoch: 0
+    use_epoch: -1
+    momentum: 0.2
+
+val:
+  batch_size: 128
+
+test:
+  batch_size: 128
+

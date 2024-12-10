@@ -1,0 +1,74 @@
+torch_home: ~/.cache/torch/
+seed: 2000
+use_amp: False
+balance_sample: True
+vis: False
+
+project_name: 'lmh-no23.6'
+world_size: '1'
+cuda_visible_devices: '7'
+debug: False #lmh_change False
+num_workers: 8
+
+dataset:
+  name: DFA
+  loader: torch
+  DFA:
+    data_root: /data5/liuminghui/datasets/forgery/Attribution/release/
+    train_ratio_per_class: 0.8  #lmh_change_debug : 0.8
+    meta_paths: [
+      #/data5/liuminghui/datasets/forgery/Attribution/release/meta_data/Protocol2_openset_real_fake_large_merge_meta.csv,
+      /data5/liuminghui/datasets/forgery/Attribution/release/meta_data/Protocol1_openset_fake_large_merge_meta.csv,
+    ]
+    seed: ${seed}
+    mod: all
+    crop_face: False #lmh_change
+    predictor_path: /data5/liuminghui/datasets/forgery/Attribution/release/shape_predictor_68_face_landmarks.dat
+
+transform:
+  image_size: 256
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+model:
+  resume: #加载模型
+  name: BaseClassifier #CPLClassifer lmh_change
+  params:
+    encoder: resnet50
+    num_classes: 20 #22/20分类数
+    drop_rate: 0.2
+    pretrained: True
+    is_feat: True
+    neck: bnneck
+    num_patch: 3
+    disentangle: True
+
+optimizer:
+  name: Adam
+  params:
+    lr: 0.0002
+    weight_decay: 1.0e-5
+
+scheduler:
+  name: StepLR
+  params:
+    step_size: 10
+    gamma: 0.2
+
+train:
+  epochs: 50
+  batch_size: 128 #128
+  log_time: 30
+  memory:
+    init_epoch: 0
+    use_epoch: 0
+    momentum: 0.2
+
+val:
+  batch_size: 128 #128
+
+test:
+  batch_size: 128 #128
+
+method:
+  name: SLModel #CPL lmh_change
